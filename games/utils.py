@@ -22,3 +22,13 @@ class Direction:
         if self.col == "-":
             col = col - i
         return row, col
+
+    def connect_four(self, coordinate: (int, int), coins):
+        if not self.is_valid(*coordinate):
+            return False
+        player = coins.get(coordinate)
+        for i in range(1, 4):
+            next_player = coins.get(self.next(*coordinate, i))
+            if next_player != player:
+                return False
+        return True

@@ -1,4 +1,5 @@
 from django.test import TestCase, override_settings
+from model_bakery import baker
 
 from games.models import Game
 from games.utils import Direction
@@ -48,3 +49,23 @@ class DirectionTest(TestCase):
         with self.subTest(msg="confirm (0, 6) coordinate valid direction next values"):
             self.assertEqual(Game.DIRECTIONS[1].next(0, 6, 1), (1, 6), msg="move by one along column")
             self.assertEqual(Game.DIRECTIONS[3].next(0, 6, 1), (1, 5), msg="move by one along column and back one along row")
+
+    def test_connect_four(self):
+        player_1 = baker.make('User', first_name="test", last_name="player1")
+        player_2 = baker.make('User', first_name="test", last_name="player2")
+        coins = {
+            (0, 0): player_1,
+            (0, 2): player_2,
+            (1, 2): player_2,
+            (2, 2): player_2,
+            (3, 2): player_2,
+        }
+        with self.subTest(msg="confirm (0, 0) has no connect four in any direction"):
+            for direction in Game.DIRECTIONS:
+                self.assertFalse(direction.connect_four((0, 0), coins))
+
+        with self.subTest(msg="confirm (0, 2) has only connect four column direction"):
+            self.assertFalse(Game.DIRECTIONS[0].connect_four((0, 2), coins))
+            self.assertTrue(Game.DIRECTIONS[1].connect_four((0, 2), coins))
+            self.assertFalse(Game.DIRECTIONS[2].connect_four((0, 2), coins))
+            self.assertFalse(Game.DIRECTIONS[3].connect_four((0, 2), coins))
