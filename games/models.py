@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Max, F, IntegerField, Value
 from django.db.models.functions import Cast, Coalesce
 from django.utils.functional import cached_property
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from .utils import Direction
@@ -33,6 +34,20 @@ class Game(models.Model):
 
     def __str__(self):
         return f"{self.created_date.strftime('%d/%m/%Y')} {self.player_1.get_full_name()} vs {self.player_2.get_full_name()}: {self.status}"
+
+    def html_title(self, user):
+        is_player_1 = user == self.player_1
+        is_player_2 = user == self.player_2
+        player_1 = "You" if is_player_1 else self.player_1.get_full_name()
+        player_2 = "you" if is_player_2 else self.player_2.get_full_name()
+
+        return format_html(
+            '<span class="text-danger"><i class="fas fa-coins"></i></span> {player_1} challenge{plural} '
+            '<span class="text-warning"><i class="fas fa-coins"></i></span> {player_2}',
+            player_1=player_1,
+            plural="" if is_player_1 else "s",
+            player_2=player_2,
+        )
 
     @property
     def available_columns(self):

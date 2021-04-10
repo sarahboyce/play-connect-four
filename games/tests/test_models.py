@@ -33,6 +33,20 @@ class GameTest(TestCase):
             "14/01/2012 test player1 vs test player2: P1"
         )
 
+    def test_html_title(self):
+        with self.subTest(msg="user is player_1"):
+            self.assertEqual(
+                '<span class="text-danger"><i class="fas fa-coins"></i></span> '
+                'You challenge <span class="text-warning"><i class="fas fa-coins"></i></span> test player2',
+                self.game.html_title(user=self.player_1)
+            )
+        with self.subTest(msg="user is player_2"):
+            self.assertEqual(
+                '<span class="text-danger"><i class="fas fa-coins"></i></span> '
+                'test player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
+                self.game.html_title(user=self.player_2)
+            )
+
     def test_available_columns(self):
         with self.subTest():
             self.assertListEqual(
