@@ -47,6 +47,34 @@ class GameTest(TestCase):
                 self.game.html_title(user=self.player_2)
             )
 
+    def test_status_badge(self):
+        with self.subTest(msg="Game in progress"):
+            self.assertEqual(
+                '<span class="badge badge-primary"><i class="fas fa-play"></i> Continue</span>',
+                self.game.status_badge(user=self.player_1)
+            )
+
+        with self.subTest(msg="Game drew"):
+            draw = baker.make('games.Game', player_1=self.player_1, player_2=self.player_2, status=Game.Status.DRAW)
+            self.assertEqual(
+                '<span class="badge badge-secondary"><i class="fas fa-sad-cry"></i> You Drew</span>',
+                draw.status_badge(user=self.player_1)
+            )
+
+        with self.subTest(msg="Game won"):
+            won = baker.make(
+                'games.Game',
+                player_1=self.player_1, player_2=self.player_2, status=Game.Status.COMPLETE, winner=self.player_1,
+            )
+            self.assertEqual(
+                '<span class="badge badge-secondary"><i class="fas fa-trophy"></i> You Won</span>',
+                won.status_badge(user=self.player_1)
+            )
+            self.assertEqual(
+                '<span class="badge badge-secondary"><i class="fas fa-trophy"></i> test player1 Won</span>',
+                won.status_badge(user=self.player_2)
+            )
+
     def test_available_columns(self):
         with self.subTest():
             self.assertListEqual(

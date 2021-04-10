@@ -49,6 +49,19 @@ class Game(models.Model):
             player_2=player_2,
         )
 
+    def status_badge(self, user):
+        badge_class = 'primary' if self.is_pending else 'secondary'
+        icon = 'play'
+        inner_text = 'Continue'
+        if self.winner:
+            icon = 'trophy'
+            inner_text = f"{'You' if self.winner == user else self.winner.get_full_name()} Won"
+        if self.status == Game.Status.DRAW:
+            icon = 'sad-cry'
+            inner_text = 'You Drew'
+        span = f'<span class="badge badge-{badge_class}"><i class="fas fa-{icon}"></i> '
+        return format_html(span + '{inner_text}</span>', inner_text=inner_text,)
+
     @property
     def available_columns(self):
         """Return the list of columns where a coin can enter,
