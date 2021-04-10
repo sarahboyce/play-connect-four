@@ -1,3 +1,5 @@
+from itertools import cycle
+
 from django.test import TestCase, override_settings
 from model_bakery import baker
 from freezegun import freeze_time
@@ -199,3 +201,47 @@ class GameTest(TestCase):
             self.game.calculate_status(),
             {"status": Game.Status.PLAYER_2}
         )
+
+    def test_create_coin_user_not_payer(self):
+        user = baker.make('User', first_name="stranger", last_name="danger")
+        with self.assertRaisesMessage(ValueError, "User is not part of the game"):
+            self.game.create_coin(user, 0)
+        self.assertEqual(self.game.coins.count(), 0, msg="coin is not created")
+
+    def test_create_coin_not_player_turn(self):
+        with self.assertRaisesMessage(ValueError, "It is not test player2's turn!"):
+            self.game.create_coin(self.player_2, 0)
+        self.assertEqual(self.game.coins.count(), 0, msg="coin is not created")
+
+    def test_create_coin_col_invalid(self):
+        baker.make("games.Coin", game=self.game, row=5, column=0)
+        with self.assertRaisesMessage(ValueError, "Column is filled!"):
+            self.game.create_coin(self.player_1, 0)
+        self.assertEqual(self.game.coins.count(), 1, msg="second coin is not created")
+
+    def test_create_coin_valid_first_row(self):
+        self.assertFalse(self.game.create_coin(self.player_1, 0), msg="game is not complete")
+
+        self.game.refresh_from_db()
+        coin = self.game.last_move
+        # validate the coin is created as expected and game status updated
+        self.assertEqual(coin.row, 0)
+        self.assertEqual(coin.column, 0)
+        self.assertEqual(coin.player, self.player_1)
+        self.assertEqual(coin.game, self.game)
+        self.assertEqual(self.game.status, Game.Status.PLAYER_2)
+
+    def test_create_coin_valid_second_row(self):
+        with freeze_time("2012-01-03"):
+            baker.make("games.Coin", game=self.game, row=0, column=0, player=self.player_2)
+
+        self.assertFalse(self.game.create_coin(self.player_1, 0), msg="game is not complete")
+
+        self.game.refresh_from_db()
+        coin = self.game.last_move
+        # validate the coin is created as expected and game status updated
+        self.assertEqual(coin.row, 1)
+        self.assertEqual(coin.column, 0)
+        self.assertEqual(coin.player, self.player_1)
+        self.assertEqual(coin.game, self.game)
+        self.assertEqual(self.game.status, Game.Status.PLAYER_2)

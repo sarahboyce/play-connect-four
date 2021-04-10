@@ -2,8 +2,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
-from django.db.models import Max, F, IntegerField
-from django.db.models.functions import Cast
+from django.db.models import Max, F, IntegerField, Value
+from django.db.models.functions import Cast, Coalesce
 from django.utils.translation import gettext_lazy as _
 
 from .utils import Direction
@@ -85,6 +85,37 @@ class Game(models.Model):
 
         # the player who didn't play the last coin is next determines the status
         return {"status": Game.Status.PLAYER_2 if self.last_move.player == self.player_1 else Game.Status.PLAYER_1}
+
+    def create_coin(self, user, column):
+        """Providing the column and user are valid, a coin is created in the 'dropped' coin location.
+        Then the game is updated with the new status and returns whether the game is complete"""
+
+        if user not in {self.player_1, self.player_2}:
+            raise ValueError("User is not part of the game")
+
+        valid_status = {self.player_1: Game.Status.PLAYER_1, self.player_2: Game.Status.PLAYER_2}
+        if valid_status[user] != self.status:
+            raise ValueError(f"It is not {user.get_full_name()}'s turn!")
+
+        if column not in self.available_columns:
+            raise ValueError("Column is filled!")
+
+        row = self.coins.filter(
+            column=column
+        ).annotate(
+            next_row=Cast(F('row') + 1, IntegerField())
+        ).aggregate(
+            col_next_row=Coalesce(Max('next_row'), Value(0))
+        ).get('col_next_row', 0)
+
+        Coin.objects.create(game=self, player=user, column=column, row=row)
+
+        # recalculate the game status and save the result
+        self.__dict__.update(self.calculate_status())
+        self.save()
+
+        # return whether the game is over
+        return self.status in {Game.Status.COMPLETE, Game.Status.DRAW}
 
 
 class Coin(models.Model):
