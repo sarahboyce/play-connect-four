@@ -101,3 +101,101 @@ class GameTest(TestCase):
             self.game.get_coin_dict(),
             {(0, 0): self.player_1.id, (0, 1): self.player_2.id, (1, 1): self.player_1.id, (2, 2): self.player_2.id}
         )
+
+    def test_calculate_status_empty_board(self):
+        """
+        Empty Board:
+        +---+---+---+---+---+---+
+        | - | - | - | - | - | - |
+        | - | - | - | - | - | - |
+        | - | - | - | - | - | - |
+        | - | - | - | - | - | - |
+        | - | - | - | - | - | - |
+        | - | - | - | - | - | - |
+        | - | - | - | - | - | - |
+        +---+---+---+---+---+---+
+        """
+        self.assertDictEqual(
+            self.game.calculate_status(),
+            {"status": Game.Status.PLAYER_1},
+            msg="No coins in the board, therefore awaiting player 1's turn"
+        )
+
+    def test_calculate_status_full_board(self):
+        """
+        Filled board with coins but without a winner
+        +----+----+----+----+----+----+
+        | P2 | P1 | P2 | P1 | P2 | P1 |
+        | P2 | P1 | P2 | P1 | P2 | P1 |
+        | P1 | P2 | P1 | P2 | P1 | P2 |
+        | P1 | P2 | P1 | P2 | P1 | P2 |
+        | P2 | P1 | P2 | P1 | P2 | P1 |
+        | P2 | P1 | P2 | P1 | P2 | P1 |
+        | P1 | P2 | P1 | P2 | P1 | P2 |
+        +----+----+----+----+----+----+
+        """
+        player_1_first = cycle([self.player_1, self.player_2])
+        player_2_first = cycle([self.player_2, self.player_1])
+        for row in range(2):
+            for col in range(7):
+                baker.make('games.Coin', game=self.game, row=row, column=col, player=player_1_first)
+        for row in range(2, 4):
+            for col in range(7):
+                baker.make('games.Coin', game=self.game, row=row, column=col, player=player_2_first)
+        for row in range(4, 6):
+            for col in range(7):
+                baker.make('games.Coin', game=self.game, row=row, column=col, player=player_1_first)
+
+        self.assertDictEqual(
+            self.game.calculate_status(),
+            {"status": Game.Status.DRAW},
+            msg="The board is , therefore awaiting player 1's turn"
+        )
+
+    def test_calculate_status_player_1_won(self):
+        """
+        Player 1 wins the game
+        +----+----+----+----+---+---+
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | P2 | P2 | P2 | -  | - |   |
+        | P1 | P1 | P1 | P1 | - | - |
+        +----+----+----+----+---+---+
+        """
+        baker.make('games.Coin', game=self.game, row=0, column=0, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=1, column=0, player=self.player_2)
+        baker.make('games.Coin', game=self.game, row=0, column=1, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=1, column=1, player=self.player_2)
+        baker.make('games.Coin', game=self.game, row=0, column=2, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=1, column=2, player=self.player_2)
+        baker.make('games.Coin', game=self.game, row=0, column=3, player=self.player_1)
+
+        self.assertDictEqual(
+            self.game.calculate_status(),
+            {"status": Game.Status.COMPLETE, "winner": self.player_1.id}
+        )
+
+    def test_calculate_status_player_2_turn(self):
+        """
+        No winner - Player 2's turn
+        +----+----+----+----+---+---+
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | -  | -  | -  | - | - |
+        | -  | P1 | -  | -  | - |   |
+        | P1 | P2 | -  | -  | - | - |
+        +----+----+----+----+---+---+
+        """
+        baker.make('games.Coin', game=self.game, row=0, column=0, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=0, column=1, player=self.player_2)
+        baker.make('games.Coin', game=self.game, row=1, column=1, player=self.player_1)
+
+        self.assertDictEqual(
+            self.game.calculate_status(),
+            {"status": Game.Status.PLAYER_2}
+        )

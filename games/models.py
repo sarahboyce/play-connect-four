@@ -59,6 +59,33 @@ class Game(models.Model):
             for row, col, player in self.coins.order_by('row', 'column').values_list('row', 'column', 'player')
         }
 
+    def calculate_status(self):
+        """Checks the games coins to calculate the status.
+            If the board is full, the game is a draw without a winner.
+            If there are 4 coins in a line, then the game is complete with a winner.
+            Otherwise, the game is in progress:
+                the player who didn't play the last coin is next determines the status
+                when no coins have been played, player_1 is next and determines the status
+        """
+        coins = self.get_coin_dict()
+
+        # check whether the board is empty
+        if len(coins) == 0:
+            return {"status": Game.Status.PLAYER_1}
+
+        # loop through the game's coins and check whether the coin is the first in a connect 4 sequence
+        for coordinate, player in coins.items():
+            for direction in Game.DIRECTIONS:
+                if direction.connect_four(coordinate, coins):
+                    return {"status": Game.Status.COMPLETE, "winner": player}
+
+        # as no winner, check whether the board is full
+        if len(coins) == settings.CONNECT_FOUR_ROWS * settings.CONNECT_FOUR_COLUMNS:
+            return {"status": Game.Status.DRAW}
+
+        # the player who didn't play the last coin is next determines the status
+        return {"status": Game.Status.PLAYER_2 if self.last_move.player == self.player_1 else Game.Status.PLAYER_1}
+
 
 class Coin(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="coins")
