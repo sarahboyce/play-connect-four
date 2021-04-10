@@ -22,6 +22,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Local
+    'games',
 ]
 
 MIDDLEWARE = [
@@ -112,3 +115,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Local settings
+CONNECT_FOUR_ROWS = 6
+CONNECT_FOUR_COLUMNS = 7
