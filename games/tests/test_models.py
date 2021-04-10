@@ -64,6 +64,7 @@ class GameTest(TestCase):
             self.assertIsNone(self.game.last_move)
 
         with freeze_time("2012-01-03"):
+            del self.game.__dict__['last_move']
             first_coin = baker.make('games.Coin', game=self.game)
 
         with self.subTest(msg="single coin therefore last move is that coin"):
@@ -73,6 +74,7 @@ class GameTest(TestCase):
             )
 
         with self.subTest(msg="multiple coins therefore last move is coin with latest creation date"):
+            del self.game.__dict__['last_move']
             latest_coin = baker.make('games.Coin', game=self.game)
             self.assertEqual(
                 self.game.last_move,

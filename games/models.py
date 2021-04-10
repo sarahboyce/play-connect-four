@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Max, F, IntegerField, Value
 from django.db.models.functions import Cast, Coalesce
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from .utils import Direction
@@ -42,7 +43,7 @@ class Game(models.Model):
             if i not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list('column', flat=True)
         ]
 
-    @property
+    @cached_property
     def last_move(self):
         """Return the last coin that was played"""
         return self.coins.order_by('-created_date').first()
