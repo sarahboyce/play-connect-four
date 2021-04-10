@@ -11,6 +11,7 @@ psycopg2 = "2.8.6"
 [dev-packages]
 model-bakery = "*"
 freezegun = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.9"
