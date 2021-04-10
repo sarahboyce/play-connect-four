@@ -40,6 +40,11 @@ class Game(models.Model):
             if i not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list('column', flat=True)
         ]
 
+    @property
+    def last_move(self):
+        """Return the last coin that was played"""
+        return self.coins.order_by('-created_date').first()
+
 
 class Coin(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="coins")

@@ -54,3 +54,23 @@ class GameTest(TestCase):
                 [],
                 msg="no columns available"
             )
+
+    def test_last_move(self):
+        with self.subTest(msg="no coins therefore last move is none"):
+            self.assertIsNone(self.game.last_move)
+
+        with freeze_time("2012-01-03"):
+            first_coin = baker.make('games.Coin', game=self.game)
+
+        with self.subTest(msg="single coin therefore last move is that coin"):
+            self.assertEqual(
+                self.game.last_move,
+                first_coin,
+            )
+
+        with self.subTest(msg="multiple coins therefore last move is coin with latest creation date"):
+            latest_coin = baker.make('games.Coin', game=self.game)
+            self.assertEqual(
+                self.game.last_move,
+                latest_coin,
+            )
