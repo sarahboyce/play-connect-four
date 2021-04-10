@@ -1,11 +1,12 @@
 from django.conf import settings
 from dataclasses import dataclass
+from typing import Literal
 
 
 @dataclass
 class Direction:
-    row: str = ""
-    col: str = ""
+    row: Literal["+", ""] = ""
+    col: Literal["+", "-", ""] = ""
 
     def is_valid(self, row: int, col: int):
         return not (self.col == "+" and col + 4 > settings.CONNECT_FOUR_COLUMNS) and \
@@ -15,8 +16,6 @@ class Direction:
     def next(self, row: int, col: int, i: int):
         if self.row == "+":
             row = row + i
-        if self.row == "-":
-            row = row - i
         if self.col == "+":
             col = col + i
         if self.col == "-":
