@@ -90,3 +90,14 @@ class GameTest(TestCase):
         with self.subTest(msg="game pending when player 2s turn"):
             draw_game = baker.make('games.Game', status=Game.Status.PLAYER_2)
             self.assertTrue(draw_game.is_pending)
+
+    def test_get_coin_dict(self):
+        # set up test coins
+        baker.make('games.Coin', game=self.game, row=0, column=0, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=0, column=1, player=self.player_2)
+        baker.make('games.Coin', game=self.game, row=1, column=1, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=2, column=2, player=self.player_2)
+        self.assertDictEqual(
+            self.game.get_coin_dict(),
+            {(0, 0): self.player_1.id, (0, 1): self.player_2.id, (1, 1): self.player_1.id, (2, 2): self.player_2.id}
+        )

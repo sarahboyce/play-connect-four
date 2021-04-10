@@ -52,6 +52,13 @@ class Game(models.Model):
         """Check whether the game is not complete and pending the next player's move"""
         return self.status in {Game.Status.PLAYER_1, Game.Status.PLAYER_2}
 
+    def get_coin_dict(self):
+        """Return a dict where the coin location is the key and player is the item"""
+        return {
+            (row, col): player
+            for row, col, player in self.coins.order_by('row', 'column').values_list('row', 'column', 'player')
+        }
+
 
 class Coin(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="coins")
