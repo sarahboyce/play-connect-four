@@ -29,3 +29,28 @@ class GameTest(TestCase):
             "14/01/2012 test player1 vs test player2: P1"
         )
 
+    def test_available_columns(self):
+        with self.subTest():
+            self.assertListEqual(
+                self.game.available_columns,
+                [0, 1, 2, 3, 4, 5, 6],
+                msg="all columns are available as no coins"
+            )
+
+        with self.subTest():
+            for column in [0, 3, 4]:
+                baker.make('games.Coin', game=self.game, player=self.player_1, row=5, column=column)
+            self.assertListEqual(
+                self.game.available_columns,
+                [1, 2, 5, 6],
+                msg="only some columns available"
+            )
+
+        with self.subTest():
+            for column in [1, 2, 5, 6]:
+                baker.make('games.Coin', game=self.game, player=self.player_1, row=5, column=column)
+            self.assertListEqual(
+                self.game.available_columns,
+                [],
+                msg="no columns available"
+            )

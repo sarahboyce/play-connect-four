@@ -31,6 +31,15 @@ class Game(models.Model):
     def __str__(self):
         return f"{self.created_date.strftime('%d/%m/%Y')} {self.player_1.get_full_name()} vs {self.player_2.get_full_name()}: {self.status}"
 
+    @property
+    def available_columns(self):
+        """Return the list of columns where a coin can enter,
+        this is the columns where there isn't a coin in the last row"""
+        return [
+            i for i in range(settings.CONNECT_FOUR_COLUMNS)
+            if i not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list('column', flat=True)
+        ]
+
 
 class Coin(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="coins")
