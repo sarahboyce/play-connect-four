@@ -2,7 +2,7 @@ from django.test import TestCase, override_settings
 from model_bakery import baker
 from freezegun import freeze_time
 
-from .models import Game
+from games.models import Game
 
 
 class CoinTest(TestCase):
