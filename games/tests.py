@@ -2,6 +2,8 @@ from django.test import TestCase, override_settings
 from model_bakery import baker
 from freezegun import freeze_time
 
+from .models import Game
+
 
 class CoinTest(TestCase):
     @override_settings(CONNECT_FOUR_ROWS=6, CONNECT_FOUR_COLUMNS=7)
@@ -74,3 +76,17 @@ class GameTest(TestCase):
                 self.game.last_move,
                 latest_coin,
             )
+
+    def test_is_pending(self):
+        with self.subTest(msg="game not pending when a draw"):
+            draw_game = baker.make('games.Game', status=Game.Status.DRAW)
+            self.assertFalse(draw_game.is_pending)
+        with self.subTest(msg="game not pending when complete"):
+            draw_game = baker.make('games.Game', status=Game.Status.COMPLETE)
+            self.assertFalse(draw_game.is_pending)
+        with self.subTest(msg="game pending when player 1s turn"):
+            draw_game = baker.make('games.Game', status=Game.Status.PLAYER_1)
+            self.assertTrue(draw_game.is_pending)
+        with self.subTest(msg="game pending when player 2s turn"):
+            draw_game = baker.make('games.Game', status=Game.Status.PLAYER_2)
+            self.assertTrue(draw_game.is_pending)

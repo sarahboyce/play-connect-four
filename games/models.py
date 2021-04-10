@@ -45,6 +45,11 @@ class Game(models.Model):
         """Return the last coin that was played"""
         return self.coins.order_by('-created_date').first()
 
+    @property
+    def is_pending(self):
+        """Check whether the game is not complete and pending the next player's move"""
+        return self.status in {Game.Status.PLAYER_1, Game.Status.PLAYER_2}
+
 
 class Coin(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="coins")
