@@ -6,6 +6,8 @@ from django.db.models import Max, F, IntegerField
 from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
 
+from .utils import Direction
+
 
 class Game(models.Model):
 
@@ -25,7 +27,7 @@ class Game(models.Model):
         Direction(col="+"),
         Direction(row="+"),
         Direction(row="+", col="+"),
-        Direction(row="-", col="+"),
+        Direction(row="+", col="-"),
     ]
 
     def __str__(self):
