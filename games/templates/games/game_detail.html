@@ -14,8 +14,12 @@
         <table class="center">
             <thead>
                 <tr>
+                    {% is_users_turn game as users_turn %}
                     {% for col in game.COLUMNS %}
-                        <th data-col="{{ col }}" class="circle play-row {{ game.current_player_colour }}"></th>
+                        {% is_valid_col game col as valid_col %}
+                        <th {% if users_turn and valid_col %}data-url="{% url 'game_coin' pk=game.pk column=col %}"{% endif %}
+                            class="circle{% if users_turn and valid_col %} play-row {{ game.current_player_colour }}{% endif %}">
+                        </th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -31,4 +35,12 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block extraJS %}
+{% is_users_turn game as users_turn %}
+<script id="gameDetailScript" src="{% static 'games/game_detail.js' %}" type="text/javascript"
+        data-check-turn-url="{% url 'game_check_turn' pk=game.pk %}"
+        data-check-turn="{% if not users_turn and game.is_pending %}true{% else %}false{% endif %}"
+></script>
 {% endblock %}
