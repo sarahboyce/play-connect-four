@@ -35,16 +35,16 @@ class Game(models.Model):
     ]
 
     def __str__(self):
-        return f"{self.created_date.strftime('%d/%m/%Y')} {self.player_1.get_full_name()} vs {self.player_2.get_full_name()}: {self.status}"
+        return f"{self.created_date.strftime('%d/%m/%Y')} {self.player_1} vs {self.player_2}: {self.status}"
 
     def get_absolute_url(self):
         return reverse('game_detail', kwargs={'pk': self.pk})
 
-    def html_title(self, user):
+    def html_list_title(self, user):
         is_player_1 = user == self.player_1
         is_player_2 = user == self.player_2
-        player_1 = "You" if is_player_1 else self.player_1.get_full_name()
-        player_2 = "you" if is_player_2 else self.player_2.get_full_name()
+        player_1 = "You" if is_player_1 else self.player_1
+        player_2 = "you" if is_player_2 else self.player_2
 
         return format_html(
             '<span class="text-danger"><i class="fas fa-coins"></i></span> {player_1} challenge{plural} '
@@ -54,15 +54,28 @@ class Game(models.Model):
             player_2=player_2,
         )
 
+    def html_detail_title(self, user_id):
+        is_player_1 = user_id == self.player_1_id
+        if self.winner:
+            if self.winner_id == user_id:
+                return '<i class="fas fa-trophy"></i> You are the winner!'
+            return '<i class="fas fa-window-close"></i> You lost!'
+        if self.status == Game.Status.DRAW:
+            return '<i class="fas fa-window-close"></i> It was a draw!'
+        if self.is_users_turn(user_id):
+            return '<i class="fas fa-play"></i> Your turn!'
+        return f'<i class="fas fa-spinner fa-pulse"></i> ' \
+               f'{self.player_2 if is_player_1 else self.player_1}s turn!'
+
     def html_badge(self, user):
         badge_class = 'primary' if self.is_pending else 'secondary'
         icon = 'play'
         inner_text = 'Continue'
         if self.winner:
             icon = 'trophy'
-            inner_text = f"{'You' if self.winner == user else self.winner.get_full_name()} Won"
+            inner_text = f"{'You' if self.winner == user else self.winner} Won"
         if self.status == Game.Status.DRAW:
-            icon = 'sad-cry'
+            icon = 'window-close'
             inner_text = 'You Drew'
         span = f'<span class="badge badge-{badge_class}"><i class="fas fa-{icon}"></i> '
         return format_html(span + '{inner_text}</span>', inner_text=inner_text,)
@@ -158,7 +171,7 @@ class Game(models.Model):
 
         valid_status = {self.player_1: Game.Status.PLAYER_1, self.player_2: Game.Status.PLAYER_2}
         if valid_status[user] != self.status:
-            raise ValueError(f"It is not {user.get_full_name()}'s turn!")
+            raise ValueError(f"It is not {user}'s turn!")
 
         if column not in self.available_columns:
             raise ValueError("Column is filled!")
@@ -195,4 +208,4 @@ class Coin(models.Model):
     unique_together = ['game', 'column', 'row']
 
     def __str__(self):
-        return f"{self.player.get_full_name()} to ({self.row}, {self.column})"
+        return f"{self.player} to ({self.row}, {self.column})"

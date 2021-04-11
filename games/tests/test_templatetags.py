@@ -7,7 +7,7 @@ from .test_views import ViewTestCase
 class GameExtrasTemplateTagTest(ViewTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.player_1 = baker.make('User', first_name="test", last_name="player1")
+        cls.player_1 = baker.make('User', username="test.player1")
 
     def setUp(self):
         super().setUp()
@@ -25,7 +25,7 @@ class GameExtrasTemplateTagTest(ViewTestCase):
         # test that template tag loads correctly
         self.assertInHTML(
             '<span class="text-danger"><i class="fas fa-coins"></i></span> '
-            'test player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
+            'test.player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
             rendered_template,
         )
 

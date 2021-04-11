@@ -10,11 +10,11 @@ from games.models import Game
 class CoinTest(TestCase):
     @override_settings(CONNECT_FOUR_ROWS=6, CONNECT_FOUR_COLUMNS=7)
     def test_string_method(self):
-        player = baker.make('User', first_name="test", last_name="player")
+        player = baker.make('User', username="test.player")
         coin = baker.make('games.Coin', player=player, row=1, column=3)
         self.assertEqual(
             coin.__str__(),
-            "test player to (1, 3)"
+            "test.player to (1, 3)"
         )
 
 
@@ -23,14 +23,14 @@ class CoinTest(TestCase):
 class GameTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.player_1 = baker.make('User', first_name="test", last_name="player1")
-        cls.player_2 = baker.make('User', first_name="test", last_name="player2")
+        cls.player_1 = baker.make('User', username="test.player1")
+        cls.player_2 = baker.make('User', username="test.player2")
         cls.game = baker.make('games.Game', player_1=cls.player_1, player_2=cls.player_2)
 
     def test_string_method(self):
         self.assertEqual(
             self.game.__str__(),
-            "14/01/2012 test player1 vs test player2: P1"
+            "14/01/2012 test.player1 vs test.player2: P1"
         )
 
     def test_get_absolute_url(self):
@@ -40,14 +40,14 @@ class GameTest(TestCase):
         with self.subTest(msg="user is player_1"):
             self.assertEqual(
                 '<span class="text-danger"><i class="fas fa-coins"></i></span> '
-                'You challenge <span class="text-warning"><i class="fas fa-coins"></i></span> test player2',
                 self.game.html_title(user=self.player_1)
+                'You challenge <span class="text-warning"><i class="fas fa-coins"></i></span> test.player2',
             )
         with self.subTest(msg="user is player_2"):
             self.assertEqual(
                 '<span class="text-danger"><i class="fas fa-coins"></i></span> '
-                'test player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
                 self.game.html_title(user=self.player_2)
+                'test.player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
             )
 
     def test_html_badge(self):
@@ -74,7 +74,7 @@ class GameTest(TestCase):
                 won.html_badge(user=self.player_1)
             )
             self.assertEqual(
-                '<span class="badge badge-secondary"><i class="fas fa-trophy"></i> test player1 Won</span>',
+                '<span class="badge badge-secondary"><i class="fas fa-trophy"></i> test.player1 Won</span>',
                 won.html_badge(user=self.player_2)
             )
 
@@ -303,7 +303,7 @@ class GameTest(TestCase):
         self.assertEqual(self.game.coins.count(), 0, msg="coin is not created")
 
     def test_create_coin_not_player_turn(self):
-        with self.assertRaisesMessage(ValueError, "It is not test player2's turn!"):
+        with self.assertRaisesMessage(ValueError, "It is not test.player2's turn!"):
             self.game.create_coin(self.player_2, 0)
         self.assertEqual(self.game.coins.count(), 0, msg="coin is not created")
 
