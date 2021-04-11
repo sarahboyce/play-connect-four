@@ -150,6 +150,23 @@ class GameTest(TestCase):
             {(0, 0): self.player_1.id, (0, 1): self.player_2.id, (1, 1): self.player_1.id, (2, 2): self.player_2.id}
         )
 
+    def test_get_player_colour(self):
+        self.assertEqual(self.game.get_player_colour(self.player_1.id), "red")
+        self.assertEqual(self.game.get_player_colour(self.player_2.id), "yellow")
+        self.assertEqual(self.game.get_player_colour(0), "white")
+
+    def test_current_player_colour(self):
+        with self.subTest(msg="Player 1 turn"):
+            self.assertEqual(self.game.current_player_colour, "red")
+
+        with self.subTest(msg="Player 2 turn"):
+            player_2_game = baker.make("games.Game", status=Game.Status.PLAYER_2, player_1=self.player_1, player_2=self.player_2)
+            self.assertEqual(player_2_game.current_player_colour, "yellow")
+
+        with self.subTest(msg="No ones turn"):
+            no_ones_game = baker.make("games.Game", status=Game.Status.COMPLETE, player_1=self.player_1, player_2=self.player_2)
+            self.assertEqual(no_ones_game.current_player_colour, "white")
+
     def test_template_dict(self):
         # set up test coins
         baker.make('games.Coin', game=self.game, row=0, column=0, player=self.player_1)

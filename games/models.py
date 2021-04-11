@@ -94,6 +94,21 @@ class Game(models.Model):
             for row, col, player in self.coins.order_by('row', 'column').values_list('row', 'column', 'player')
         }
 
+    def get_player_colour(self, user_id):
+        if user_id == self.player_1_id:
+            return "red"
+        if user_id == self.player_2_id:
+            return "yellow"
+        return "white"
+
+    @cached_property
+    def current_player_colour(self):
+        if self.status == Game.Status.PLAYER_1:
+            return self.get_player_colour(self.player_1_id)
+        if self.status == Game.Status.PLAYER_2:
+            return self.get_player_colour(self.player_2_id)
+        return "white"
+
     @cached_property
     def board_dict(self):
         return {
