@@ -133,10 +133,10 @@ class Game(models.Model):
             return {"status": Game.Status.PLAYER_1}
 
         # loop through the game's coins and check whether the coin is the first in a connect 4 sequence
-        for coordinate, player in self.coin_dict.items():
+        for coordinate, player_id in self.coin_dict.items():
             for direction in Game.DIRECTIONS:
                 if direction.connect_four(coordinate, self.coin_dict):
-                    return {"status": Game.Status.COMPLETE, "winner": player}
+                    return {"status": Game.Status.COMPLETE, "winner_id": player_id}
 
         # as no winner, check whether the board is full
         if len(self.coin_dict) == settings.CONNECT_FOUR_ROWS * settings.CONNECT_FOUR_COLUMNS:

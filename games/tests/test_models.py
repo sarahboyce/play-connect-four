@@ -258,7 +258,7 @@ class GameTest(TestCase):
 
         self.assertDictEqual(
             self.game.calculate_status(),
-            {"status": Game.Status.COMPLETE, "winner": self.player_1.id}
+            {"status": Game.Status.COMPLETE, "winner_id": self.player_1.id}
         )
 
     def test_calculate_status_player_2_turn(self):
