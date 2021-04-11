@@ -33,6 +33,9 @@ class GameTest(TestCase):
             "14/01/2012 test player1 vs test player2: P1"
         )
 
+    def test_get_absolute_url(self):
+        self.assertEqual(f"/{self.game.pk}/", self.game.get_absolute_url())
+
     def test_html_title(self):
         with self.subTest(msg="user is player_1"):
             self.assertEqual(
