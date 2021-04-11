@@ -49,7 +49,7 @@ class Game(models.Model):
             player_2=player_2,
         )
 
-    def status_badge(self, user):
+    def html_badge(self, user):
         badge_class = 'primary' if self.is_pending else 'secondary'
         icon = 'play'
         inner_text = 'Continue'
@@ -81,7 +81,8 @@ class Game(models.Model):
         """Check whether the game is not complete and pending the next player's move"""
         return self.status in {Game.Status.PLAYER_1, Game.Status.PLAYER_2}
 
-    def get_coin_dict(self):
+    @cached_property
+    def coin_dict(self):
         """Return a dict where the coin location is the key and player is the item"""
         return {
             (row, col): player
@@ -96,20 +97,19 @@ class Game(models.Model):
                 the player who didn't play the last coin is next determines the status
                 when no coins have been played, player_1 is next and determines the status
         """
-        coins = self.get_coin_dict()
 
         # check whether the board is empty
-        if len(coins) == 0:
+        if len(self.coin_dict) == 0:
             return {"status": Game.Status.PLAYER_1}
 
         # loop through the game's coins and check whether the coin is the first in a connect 4 sequence
-        for coordinate, player in coins.items():
+        for coordinate, player in self.coin_dict.items():
             for direction in Game.DIRECTIONS:
-                if direction.connect_four(coordinate, coins):
+                if direction.connect_four(coordinate, self.coin_dict):
                     return {"status": Game.Status.COMPLETE, "winner": player}
 
         # as no winner, check whether the board is full
-        if len(coins) == settings.CONNECT_FOUR_ROWS * settings.CONNECT_FOUR_COLUMNS:
+        if len(self.coin_dict) == settings.CONNECT_FOUR_ROWS * settings.CONNECT_FOUR_COLUMNS:
             return {"status": Game.Status.DRAW}
 
         # the player who didn't play the last coin is next determines the status

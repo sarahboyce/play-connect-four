@@ -47,18 +47,18 @@ class GameTest(TestCase):
                 self.game.html_title(user=self.player_2)
             )
 
-    def test_status_badge(self):
+    def test_html_badge(self):
         with self.subTest(msg="Game in progress"):
             self.assertEqual(
                 '<span class="badge badge-primary"><i class="fas fa-play"></i> Continue</span>',
-                self.game.status_badge(user=self.player_1)
+                self.game.html_badge(user=self.player_1)
             )
 
         with self.subTest(msg="Game drew"):
             draw = baker.make('games.Game', player_1=self.player_1, player_2=self.player_2, status=Game.Status.DRAW)
             self.assertEqual(
                 '<span class="badge badge-secondary"><i class="fas fa-sad-cry"></i> You Drew</span>',
-                draw.status_badge(user=self.player_1)
+                draw.html_badge(user=self.player_1)
             )
 
         with self.subTest(msg="Game won"):
@@ -68,11 +68,11 @@ class GameTest(TestCase):
             )
             self.assertEqual(
                 '<span class="badge badge-secondary"><i class="fas fa-trophy"></i> You Won</span>',
-                won.status_badge(user=self.player_1)
+                won.html_badge(user=self.player_1)
             )
             self.assertEqual(
                 '<span class="badge badge-secondary"><i class="fas fa-trophy"></i> test player1 Won</span>',
-                won.status_badge(user=self.player_2)
+                won.html_badge(user=self.player_2)
             )
 
     def test_available_columns(self):
@@ -137,14 +137,14 @@ class GameTest(TestCase):
             draw_game = baker.make('games.Game', status=Game.Status.PLAYER_2)
             self.assertTrue(draw_game.is_pending)
 
-    def test_get_coin_dict(self):
+    def test_coin_dict(self):
         # set up test coins
         baker.make('games.Coin', game=self.game, row=0, column=0, player=self.player_1)
         baker.make('games.Coin', game=self.game, row=0, column=1, player=self.player_2)
         baker.make('games.Coin', game=self.game, row=1, column=1, player=self.player_1)
         baker.make('games.Coin', game=self.game, row=2, column=2, player=self.player_2)
         self.assertDictEqual(
-            self.game.get_coin_dict(),
+            self.game.coin_dict,
             {(0, 0): self.player_1.id, (0, 1): self.player_2.id, (1, 1): self.player_1.id, (2, 2): self.player_2.id}
         )
 

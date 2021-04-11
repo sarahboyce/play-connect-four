@@ -11,4 +11,4 @@ def game_title(context, game):
 
 @register.simple_tag(takes_context=True)
 def game_badge(context, game):
-    return mark_safe(game.status_badge(user=context['request'].user))
+    return mark_safe(game.html_badge(user=context['request'].user))
