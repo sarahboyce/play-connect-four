@@ -89,6 +89,16 @@ class Game(models.Model):
             for row, col, player in self.coins.order_by('row', 'column').values_list('row', 'column', 'player')
         }
 
+    @cached_property
+    def board_dict(self):
+        return {
+            row: {
+                col: self.coin_dict.get((row, col), None)
+                for col in range(settings.CONNECT_FOUR_COLUMNS)
+            }
+            for row in reversed(range(settings.CONNECT_FOUR_ROWS))
+        }
+
     def calculate_status(self):
         """Checks the games coins to calculate the status.
             If the board is full, the game is a draw without a winner.

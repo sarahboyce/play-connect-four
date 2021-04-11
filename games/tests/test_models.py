@@ -148,6 +148,24 @@ class GameTest(TestCase):
             {(0, 0): self.player_1.id, (0, 1): self.player_2.id, (1, 1): self.player_1.id, (2, 2): self.player_2.id}
         )
 
+    def test_template_dict(self):
+        # set up test coins
+        baker.make('games.Coin', game=self.game, row=0, column=0, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=0, column=1, player=self.player_2)
+        baker.make('games.Coin', game=self.game, row=1, column=1, player=self.player_1)
+        baker.make('games.Coin', game=self.game, row=2, column=2, player=self.player_2)
+        self.assertDictEqual(
+            self.game.board_dict,
+            {
+                0: {0: self.player_1.id, 1: self.player_2.id, 2: None, 3: None, 4: None, 5: None, 6: None},
+                1: {0: None, 1: self.player_1.id, 2: None, 3: None, 4: None, 5: None, 6: None},
+                2: {0: None, 1: None, 2: self.player_2.id, 3: None, 4: None, 5: None, 6: None},
+                3: {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None},
+                4: {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None},
+                5: {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None},
+            }
+        )
+
     def test_calculate_status_empty_board(self):
         """
         Empty Board:
