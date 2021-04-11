@@ -1,8 +1,8 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, override_settings
 from model_bakery import baker
 
-from games.models import Game
-from games.views import GameListView
+from games.models import Game, Coin
+from games.views import GameListView, GameCoinRedirectView
 
 
 class ViewTestCase(TestCase):
@@ -45,7 +45,6 @@ class GameListViewTest(ViewTestCase):
     def test_filtered_list_in_context_no_data(self):
         view = GameListView()
         view.setup(self.request)
-
         qs = view.get_queryset()
         self.assertQuerysetEqual(qs, Game.objects.none())
 
@@ -53,6 +52,31 @@ class GameListViewTest(ViewTestCase):
         id_list = self.create_mix_games()
         view = GameListView()
         view.setup(self.request)
-
         qs = view.get_queryset()
         self.assertListEqual(list(qs.values_list('id', flat=True)), id_list)
+
+
+@override_settings(CONNECT_FOUR_ROWS=6, CONNECT_FOUR_COLUMNS=7)
+class GameCoinRedirectViewTest(ViewTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.player_2 = baker.make('User', first_name="test", last_name="player2")
+
+    def setUp(self):
+        super().setUp()
+        self.game = baker.make('games.Game', player_1=self.user, player_2=self.player_2)
+        self.column = 1
+        self.request = self.factory.get(f'/{self.game.pk}/{self.column}/')
+        self.request.user = self.user
+
+    def test_get_redirect_url(self):
+        view = GameCoinRedirectView()
+        view.setup(self.request)
+        redirect_url = view.get_redirect_url(pk=self.game.pk, column=self.column)
+        self.game.refresh_from_db()
+        self.assertEqual(self.game.status, Game.Status.PLAYER_2, msg="Game updated to be next players turn")
+        self.assertTrue(
+            Coin.objects.filter(game=self.game, player=self.user, column=self.column, row=0).exists(),
+            msg="Coin has been created as expected"
+        )
+        self.assertEqual(redirect_url, self.game.get_absolute_url(), msg="redirect to the game detail view")
