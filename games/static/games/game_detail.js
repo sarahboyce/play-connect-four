@@ -17,8 +17,7 @@ function checkUsersTurn() {
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            console.log("checking")
-            if (response.is_users_turn) {
+            if (response.is_users_turn || response.is_game_over) {
                 window.location.reload();
             } else {
                 setTimeout(checkUsersTurn, 5000);

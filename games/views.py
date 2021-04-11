@@ -36,4 +36,4 @@ class GameCheckRedirectView(LoginRequiredMixin, generic.View):
 
     def get(self, request, *args, **kwargs):
         game = get_object_or_404(Game, pk=kwargs['pk'])
-        return JsonResponse({'is_users_turn': game.is_users_turn(request.user.id)})
+        return JsonResponse({'is_users_turn': game.is_users_turn(request.user.id), 'is_game_over': not game.is_pending})

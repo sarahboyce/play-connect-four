@@ -99,5 +99,5 @@ class GameCheckRedirectViewTest(ViewTestCase):
         response = view.get(self.request, pk=self.game.pk)
         self.assertJSONEqual(
             str(response.content, encoding='utf8'),
-            {'is_users_turn': True}
+            {'is_users_turn': True, 'is_game_over': False}
         )
