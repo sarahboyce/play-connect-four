@@ -109,6 +109,10 @@ class Game(models.Model):
             return self.get_player_colour(self.player_2_id)
         return "white"
 
+    def is_users_turn(self, user_id):
+        return (self.status == Game.Status.PLAYER_1 and user_id == self.player_1_id) or \
+               (self.status == Game.Status.PLAYER_2 and user_id == self.player_2_id)
+
     @cached_property
     def board_dict(self):
         return {

@@ -155,6 +155,16 @@ class GameTest(TestCase):
         self.assertEqual(self.game.get_player_colour(self.player_2.id), "yellow")
         self.assertEqual(self.game.get_player_colour(0), "white")
 
+    def test_is_users_turn(self):
+        self.assertTrue(
+            self.game.is_users_turn(self.player_1.id),
+            msg="True as player 1s turn"
+        )
+        self.assertFalse(
+            self.game.is_users_turn(self.player_2.id),
+            msg="False as player 1s turn"
+        )
+
     def test_current_player_colour(self):
         with self.subTest(msg="Player 1 turn"):
             self.assertEqual(self.game.current_player_colour, "red")
