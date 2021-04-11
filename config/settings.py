@@ -24,6 +24,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    # 3rd party apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     # Local
     'games',
@@ -58,6 +64,16 @@ TEMPLATES = [
         },
     },
 ]
+
+# all-auth settings
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # not sending emails
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
