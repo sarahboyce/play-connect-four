@@ -23,3 +23,7 @@ def is_users_turn(context, game):
 def is_valid_col(game, col):
     return col in game.available_columns
 
+
+@register.simple_tag(takes_context=True)
+def game_detail_title(context, game):
+    return mark_safe(game.html_detail_title(user_id=context['request'].user.id))

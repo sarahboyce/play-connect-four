@@ -66,3 +66,15 @@ class GameExtrasTemplateTagTest(ViewTestCase):
             'Hello World',
             rendered_template,
         )
+
+    def test_game_detail_title(self):
+        template_to_render = Template(
+            '{% load game_extras %}'
+            '{% game_detail_title game %}'
+        )
+        rendered_template = template_to_render.render(self.context)
+        # test that template tag loads correctly
+        self.assertInHTML(
+            '<i class="fas fa-spinner fa-pulse"></i> test.player1s turn!',
+            rendered_template,
+        )

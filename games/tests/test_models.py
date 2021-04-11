@@ -50,6 +50,35 @@ class GameTest(TestCase):
                 self.game.html_list_title(user=self.player_2)
             )
 
+    def test_html_detail_title(self):
+        with self.subTest(msg="user is player_1"):
+            self.assertEqual(
+                '<i class="fas fa-play"></i> Your turn!',
+                self.game.html_detail_title(user_id=self.player_1.id)
+            )
+        with self.subTest(msg="user is player_2"):
+            self.assertEqual(
+                '<i class="fas fa-spinner fa-pulse"></i> test.player1s turn!',
+                self.game.html_detail_title(user_id=self.player_2.id)
+            )
+        with self.subTest(msg="player 1 is winner"):
+            player_1_winner = baker.make('games.Game', player_1=self.player_1, player_2=self.player_2, winner=self.player_1)
+            self.assertEqual(
+                '<i class="fas fa-trophy"></i> You are the winner!',
+                player_1_winner.html_detail_title(user_id=self.player_1.id)
+            )
+        with self.subTest(msg="player 1 is winner, user is player 2"):
+            self.assertEqual(
+                '<i class="fas fa-window-close"></i> You lost!',
+                player_1_winner.html_detail_title(user_id=self.player_2.id)
+            )
+        with self.subTest(msg="player 1 is winner"):
+            drew = baker.make('games.Game', player_1=self.player_1, player_2=self.player_2, status=Game.Status.DRAW)
+            self.assertEqual(
+                '<i class="fas fa-window-close"></i> It was a draw!',
+                drew.html_detail_title(user_id=self.player_1.id)
+            )
+
     def test_html_badge(self):
         with self.subTest(msg="Game in progress"):
             self.assertEqual(
