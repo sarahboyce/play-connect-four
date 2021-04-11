@@ -2,7 +2,7 @@ from django.test import TestCase, RequestFactory, override_settings
 from model_bakery import baker
 
 from games.models import Game, Coin
-from games.views import GameListView, GameCoinRedirectView
+from games.views import GameListView, GameCoinRedirectView, GameCheckRedirectView
 
 
 class ViewTestCase(TestCase):
@@ -80,3 +80,24 @@ class GameCoinRedirectViewTest(ViewTestCase):
             msg="Coin has been created as expected"
         )
         self.assertEqual(redirect_url, self.game.get_absolute_url(), msg="redirect to the game detail view")
+
+
+class GameCheckRedirectViewTest(ViewTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.player_2 = baker.make('User', first_name="test", last_name="player2")
+
+    def setUp(self):
+        super().setUp()
+        self.game = baker.make('games.Game', player_1=self.user, player_2=self.player_2)
+        self.request = self.factory.get(f'/{self.game.pk}/check/')
+        self.request.user = self.user
+
+    def test_get_redirect_url(self):
+        view = GameCheckRedirectView()
+        view.setup(self.request)
+        response = view.get(self.request, pk=self.game.pk)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'is_users_turn': True}
+        )

@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import generic
 
@@ -30,3 +31,9 @@ class GameCoinRedirectView(LoginRequiredMixin, generic.RedirectView):
         game.create_coin(user=self.request.user, column=column)
         return super().get_redirect_url(*args, **kwargs)
 
+
+class GameCheckRedirectView(LoginRequiredMixin, generic.View):
+
+    def get(self, request, *args, **kwargs):
+        game = get_object_or_404(Game, pk=kwargs['pk'])
+        return JsonResponse({'is_users_turn': game.is_users_turn(request.user.id)})
