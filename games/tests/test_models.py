@@ -36,18 +36,18 @@ class GameTest(TestCase):
     def test_get_absolute_url(self):
         self.assertEqual(f"/{self.game.pk}/", self.game.get_absolute_url())
 
-    def test_html_title(self):
+    def test_html_list_title(self):
         with self.subTest(msg="user is player_1"):
             self.assertEqual(
                 '<span class="text-danger"><i class="fas fa-coins"></i></span> '
-                self.game.html_title(user=self.player_1)
                 'You challenge <span class="text-warning"><i class="fas fa-coins"></i></span> test.player2',
+                self.game.html_list_title(user=self.player_1)
             )
         with self.subTest(msg="user is player_2"):
             self.assertEqual(
                 '<span class="text-danger"><i class="fas fa-coins"></i></span> '
-                self.game.html_title(user=self.player_2)
                 'test.player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
+                self.game.html_list_title(user=self.player_2)
             )
 
     def test_html_badge(self):

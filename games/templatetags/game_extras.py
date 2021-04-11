@@ -5,8 +5,8 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def game_title(context, game):
-    return mark_safe(game.html_title(user=context['request'].user))
+def game_list_title(context, game):
+    return mark_safe(game.html_list_title(user=context['request'].user))
 
 
 @register.simple_tag(takes_context=True)

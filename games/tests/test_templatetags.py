@@ -16,10 +16,10 @@ class GameExtrasTemplateTagTest(ViewTestCase):
         game = baker.make('games.Game', player_1=self.player_1, player_2=self.user)
         self.context = Context({'game': game, 'request': self.request})
 
-    def test_game_title(self):
+    def test_game_list_title(self):
         template_to_render = Template(
             '{% load game_extras %}'
-            '{% game_title game %}'
+            '{% game_list_title game %}'
         )
         rendered_template = template_to_render.render(self.context)
         # test that template tag loads correctly
