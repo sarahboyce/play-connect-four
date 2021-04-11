@@ -8,7 +8,6 @@ class GameExtrasTemplateTagTest(ViewTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.player_1 = baker.make('User', first_name="test", last_name="player1")
-        cls.player_2 = baker.make('User', first_name="test", last_name="player2")
 
     def setUp(self):
         super().setUp()
@@ -39,5 +38,31 @@ class GameExtrasTemplateTagTest(ViewTestCase):
         # test that template tag loads correctly
         self.assertInHTML(
             '<span class="badge badge-primary"><i class="fas fa-play"></i> Continue</span>',
+            rendered_template,
+        )
+
+    def test_is_users_turn(self):
+        template_to_render = Template(
+            '{% load game_extras %}'
+            '{% is_users_turn game as users_turn %}'
+            '{% if users_turn %}Hello World{% endif %}'
+        )
+        rendered_template = template_to_render.render(self.context)
+        # test that template tag loads correctly, not users turn
+        self.assertHTMLNotEqual(
+            'Hello World',
+            rendered_template,
+        )
+
+    def test_is_valid_col(self):
+        template_to_render = Template(
+            '{% load game_extras %}'
+            '{% is_valid_col game 1 as valid_col %}'
+            '{% if valid_col %}Hello World{% endif %}'
+        )
+        rendered_template = template_to_render.render(self.context)
+        # test that template tag loads correctly
+        self.assertInHTML(
+            'Hello World',
             rendered_template,
         )
