@@ -26,6 +26,7 @@ class Game(models.Model):
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', blank=True, null=True)
     created_date = models.DateTimeField(auto_created=True)
 
+    COLUMNS = [i for i in range(settings.CONNECT_FOUR_COLUMNS)]
     DIRECTIONS = [
         Direction(col="+"),
         Direction(row="+"),
@@ -66,13 +67,13 @@ class Game(models.Model):
         span = f'<span class="badge badge-{badge_class}"><i class="fas fa-{icon}"></i> '
         return format_html(span + '{inner_text}</span>', inner_text=inner_text,)
 
-    @property
+    @cached_property
     def available_columns(self):
         """Return the list of columns where a coin can enter,
         this is the columns where there isn't a coin in the last row"""
         return [
-            i for i in range(settings.CONNECT_FOUR_COLUMNS)
-            if i not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list('column', flat=True)
+            column for column in self.COLUMNS
+            if column not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list('column', flat=True)
         ]
 
     @cached_property

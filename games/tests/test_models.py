@@ -84,6 +84,7 @@ class GameTest(TestCase):
             )
 
         with self.subTest():
+            del self.game.__dict__['available_columns']
             for column in [0, 3, 4]:
                 baker.make('games.Coin', game=self.game, player=self.player_1, row=5, column=column)
             self.assertListEqual(
@@ -93,6 +94,7 @@ class GameTest(TestCase):
             )
 
         with self.subTest():
+            del self.game.__dict__['available_columns']
             for column in [1, 2, 5, 6]:
                 baker.make('games.Coin', game=self.game, player=self.player_1, row=5, column=column)
             self.assertListEqual(
