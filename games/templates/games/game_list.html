@@ -8,7 +8,7 @@
     <div class="col">
         <div class="list-group">
             {% for game in game_list %}
-                <a href="#" class="list-group-item list-group-item-action">
+                <a href="{{ game.get_absolute_url }}" class="list-group-item list-group-item-action">
                     <h5>{% game_title game %}</h5>
                     {% game_badge game %}
                     <span class="text-muted float-right">

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load game_extras %}
+{% load static %}
+
+{% block extraHead %}
+<link rel="stylesheet" type="text/css" href="{% static 'games/style.css' %}">
+{% endblock %}
+
+{% block title %}Connect 4 Game{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <table class="center">
+            <tbody>
+                {% for row, col_data in game.board_dict.items %}
+                    <tr data-row="{{ row }}">
+                        {% for col, player in col_data.items %}
+                            <td data-col="{{ col }}"></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
