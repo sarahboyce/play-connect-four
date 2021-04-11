@@ -60,7 +60,7 @@ class GameTest(TestCase):
         with self.subTest(msg="Game drew"):
             draw = baker.make('games.Game', player_1=self.player_1, player_2=self.player_2, status=Game.Status.DRAW)
             self.assertEqual(
-                '<span class="badge badge-secondary"><i class="fas fa-sad-cry"></i> You Drew</span>',
+                '<span class="badge badge-secondary"><i class="fas fa-window-close"></i> You Drew</span>',
                 draw.html_badge(user=self.player_1)
             )
 
