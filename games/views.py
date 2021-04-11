@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.views import generic
-from django.conf import settings
 
 from .models import Game
 

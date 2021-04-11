@@ -176,12 +176,12 @@ class GameTest(TestCase):
         self.assertDictEqual(
             self.game.board_dict,
             {
-                0: {0: self.player_1.id, 1: self.player_2.id, 2: None, 3: None, 4: None, 5: None, 6: None},
-                1: {0: None, 1: self.player_1.id, 2: None, 3: None, 4: None, 5: None, 6: None},
-                2: {0: None, 1: None, 2: self.player_2.id, 3: None, 4: None, 5: None, 6: None},
-                3: {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None},
-                4: {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None},
-                5: {0: None, 1: None, 2: None, 3: None, 4: None, 5: None, 6: None},
+                0: {0: "red", 1: "yellow", 2: "white", 3: "white", 4: "white", 5: "white", 6: "white"},
+                1: {0: "white", 1: "red", 2: "white", 3: "white", 4: "white", 5: "white", 6: "white"},
+                2: {0: "white", 1: "white", 2: "yellow", 3: "white", 4: "white", 5: "white", 6: "white"},
+                3: {0: "white", 1: "white", 2: "white", 3: "white", 4: "white", 5: "white", 6: "white"},
+                4: {0: "white", 1: "white", 2: "white", 3: "white", 4: "white", 5: "white", 6: "white"},
+                5: {0: "white", 1: "white", 2: "white", 3: "white", 4: "white", 5: "white", 6: "white"},
             }
         )
 

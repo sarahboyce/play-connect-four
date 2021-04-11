@@ -113,7 +113,7 @@ class Game(models.Model):
     def board_dict(self):
         return {
             row: {
-                col: self.coin_dict.get((row, col), None)
+                col: self.get_player_colour(self.coin_dict.get((row, col), None))
                 for col in range(settings.CONNECT_FOUR_COLUMNS)
             }
             for row in reversed(range(settings.CONNECT_FOUR_ROWS))

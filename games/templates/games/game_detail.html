@@ -12,11 +12,18 @@
 <div class="row">
     <div class="col">
         <table class="center">
+            <thead>
+                <tr>
+                    {% for col in game.COLUMNS %}
+                        <th data-col="{{ col }}" class="circle play-row {{ game.current_player_colour }}"></th>
+                    {% endfor %}
+                </tr>
+            </thead>
             <tbody>
                 {% for row, col_data in game.board_dict.items %}
                     <tr data-row="{{ row }}">
-                        {% for col, player in col_data.items %}
-                            <td data-col="{{ col }}"></td>
+                        {% for col, colour in col_data.items %}
+                            <td data-col="{{ col }}" class="circle {{ colour }}"></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
