@@ -73,7 +73,8 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-LOGIN_REDIRECT_URL = ''
+LOGIN_REDIRECT_URL = 'game_list'
+SIGNUP_REDIRECT_URL = 'game_list'
 
 SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # not sending emails
