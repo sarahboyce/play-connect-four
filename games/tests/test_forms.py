@@ -7,8 +7,8 @@ from games.forms import GameForm
 class GameFormTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.player_1 = baker.make('User', username="test.player1")
-        cls.player_2 = baker.make('User', username="test.player2")
+        cls.player_1 = baker.make("User", username="test.player1")
+        cls.player_2 = baker.make("User", username="test.player2")
 
     def test_form_init(self):
         form = GameForm(user=self.player_1)
@@ -19,6 +19,4 @@ class GameFormTest(TestCase):
             )
         with self.subTest(msg="check that cannot assign youself as opponent"):
             form.data["player_2"] = self.player_1.id
-            self.assertFalse(
-                form.is_valid()
-            )
+            self.assertFalse(form.is_valid())

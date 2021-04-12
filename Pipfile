@@ -7,14 +7,15 @@ name = "pypi"
 django = "3.2"
 django-environ = "0.4.5"
 psycopg2 = "2.8.6"
-django-allauth = "==0.44.0"
-django-crispy-forms = "*"
-django-select2 = "*"
+django-allauth = "0.44.0"
+django-crispy-forms = "1.11.2"
+django-select2 = "7.7.0"
 
 [dev-packages]
-model-bakery = "*"
-freezegun = "*"
-coverage = "*"
+model-bakery = "1.2.1"
+freezegun = "1.1.0"
+coverage = "5.5"
+pre-commit = "2.12.0"
 
 [requires]
 python_version = "3.9"

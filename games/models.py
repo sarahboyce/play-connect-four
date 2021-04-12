@@ -1,8 +1,8 @@
-from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Max, F, IntegerField, Value
+from django.db.models import F, IntegerField, Max, Value
 from django.db.models.functions import Cast, Coalesce
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -13,17 +13,24 @@ from .utils import Direction
 
 
 class Game(models.Model):
-
     class Status(models.TextChoices):
         PLAYER_1 = "P1", _("Player 1's Turn")
         PLAYER_2 = "P2", _("Player 2's Turn")
         DRAW = "D", _("Draw")
         COMPLETE = "C", _("Complete")
 
-    player_1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_1')
-    player_2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_2', verbose_name="Opponent")
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PLAYER_1)
-    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', blank=True, null=True)
+    player_1 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="player_1"
+    )
+    player_2 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="player_2", verbose_name="Opponent"
+    )
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.PLAYER_1
+    )
+    winner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="winner", blank=True, null=True
+    )
     created_date = models.DateTimeField(auto_now_add=True)
 
     COLUMNS = [i for i in range(settings.CONNECT_FOUR_COLUMNS)]
@@ -38,7 +45,7 @@ class Game(models.Model):
         return f"{self.created_date.strftime('%d/%m/%Y')} {self.player_1} vs {self.player_2}: {self.status}"
 
     def get_absolute_url(self):
-        return reverse('game_detail', kwargs={'pk': self.pk})
+        return reverse("game_detail", kwargs={"pk": self.pk})
 
     def opponent(self, user_id):
         return f"{self.player_2 if user_id == self.player_1_id else self.player_1}"
@@ -46,46 +53,46 @@ class Game(models.Model):
     def status_dict(self, user_id):
         if self.winner and self.winner_id == user_id:
             return {
-                'icon': 'trophy',
-                'inner_text': 'You won!',
-                'badge_class': 'success'
+                "icon": "trophy",
+                "inner_text": "You won!",
+                "badge_class": "success",
             }
         if self.winner:
             return {
-                'icon': 'window-close',
-                'inner_text': 'You lost!',
-                'badge_class': 'secondary'
+                "icon": "window-close",
+                "inner_text": "You lost!",
+                "badge_class": "secondary",
             }
         if self.status == Game.Status.DRAW:
             return {
-                'icon': 'window-close',
-                'inner_text': 'You drew!',
-                'badge_class': 'secondary'
+                "icon": "window-close",
+                "inner_text": "You drew!",
+                "badge_class": "secondary",
             }
         if self.is_users_turn(user_id):
             return {
-                'icon': 'play',
-                'inner_text': 'Your turn!',
-                'badge_class': 'primary'
+                "icon": "play",
+                "inner_text": "Your turn!",
+                "badge_class": "primary",
             }
         return {
-            'icon': 'spinner fa-pulse',
-            'inner_text': f"{self.opponent(user_id)}'s turn!",
-            'badge_class': 'secondary'
+            "icon": "spinner fa-pulse",
+            "inner_text": f"{self.opponent(user_id)}'s turn!",
+            "badge_class": "secondary",
         }
 
     def html_detail_title(self, user_id):
         status_dict = self.status_dict(user_id)
         return format_html(
             '<i class="fas fa-{icon}"></i> {inner_text}',
-            icon=status_dict['icon'],
-            inner_text=status_dict['inner_text'],
+            icon=status_dict["icon"],
+            inner_text=status_dict["inner_text"],
         )
 
     def html_badge(self, user_id):
         return format_html(
             '<span class="badge badge-{badge_class}"><i class="fas fa-{icon}"></i> {inner_text}</span>',
-            **self.status_dict(user_id)
+            **self.status_dict(user_id),
         )
 
     @cached_property
@@ -93,14 +100,18 @@ class Game(models.Model):
         """Return the list of columns where a coin can enter,
         this is the columns where there isn't a coin in the last row"""
         return [
-            column for column in self.COLUMNS
-            if column not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list('column', flat=True)
+            column
+            for column in self.COLUMNS
+            if column
+            not in self.coins.filter(row=settings.CONNECT_FOUR_ROWS - 1).values_list(
+                "column", flat=True
+            )
         ]
 
     @cached_property
     def last_move(self):
         """Return the last coin that was played"""
-        return self.coins.order_by('-created_date').first()
+        return self.coins.order_by("-created_date").first()
 
     @property
     def is_pending(self):
@@ -112,7 +123,9 @@ class Game(models.Model):
         """Return a dict where the coin location is the key and player is the item"""
         return {
             (row, col): player
-            for row, col, player in self.coins.order_by('row', 'column').values_list('row', 'column', 'player')
+            for row, col, player in self.coins.order_by("row", "column").values_list(
+                "row", "column", "player"
+            )
         }
 
     def get_player_colour(self, user_id):
@@ -136,8 +149,9 @@ class Game(models.Model):
         return "white"
 
     def is_users_turn(self, user_id):
-        return (self.status == Game.Status.PLAYER_1 and user_id == self.player_1_id) or \
-               (self.status == Game.Status.PLAYER_2 and user_id == self.player_2_id)
+        return (
+            self.status == Game.Status.PLAYER_1 and user_id == self.player_1_id
+        ) or (self.status == Game.Status.PLAYER_2 and user_id == self.player_2_id)
 
     @cached_property
     def board_dict(self):
@@ -151,11 +165,11 @@ class Game(models.Model):
 
     def calculate_status(self):
         """Checks the games coins to calculate the status.
-            If the board is full, the game is a draw without a winner.
-            If there are 4 coins in a line, then the game is complete with a winner.
-            Otherwise, the game is in progress:
-                the player who didn't play the last coin is next determines the status
-                when no coins have been played, player_1 is next and determines the status
+        If the board is full, the game is a draw without a winner.
+        If there are 4 coins in a line, then the game is complete with a winner.
+        Otherwise, the game is in progress:
+            the player who didn't play the last coin is next determines the status
+            when no coins have been played, player_1 is next and determines the status
         """
 
         # check whether the board is empty
@@ -169,11 +183,18 @@ class Game(models.Model):
                     return {"status": Game.Status.COMPLETE, "winner_id": player_id}
 
         # as no winner, check whether the board is full
-        if len(self.coin_dict) == settings.CONNECT_FOUR_ROWS * settings.CONNECT_FOUR_COLUMNS:
+        if (
+            len(self.coin_dict)
+            == settings.CONNECT_FOUR_ROWS * settings.CONNECT_FOUR_COLUMNS
+        ):
             return {"status": Game.Status.DRAW}
 
         # the player who didn't play the last coin is next determines the status
-        return {"status": Game.Status.PLAYER_2 if self.last_move.player == self.player_1 else Game.Status.PLAYER_1}
+        return {
+            "status": Game.Status.PLAYER_2
+            if self.last_move.player == self.player_1
+            else Game.Status.PLAYER_1
+        }
 
     def create_coin(self, user, column):
         """Providing the column and user are valid, a coin is created in the 'dropped' coin location.
@@ -182,20 +203,22 @@ class Game(models.Model):
         if user not in {self.player_1, self.player_2}:
             raise ValueError("User is not part of the game")
 
-        valid_status = {self.player_1: Game.Status.PLAYER_1, self.player_2: Game.Status.PLAYER_2}
+        valid_status = {
+            self.player_1: Game.Status.PLAYER_1,
+            self.player_2: Game.Status.PLAYER_2,
+        }
         if valid_status[user] != self.status:
             raise ValueError(f"It is not {user}'s turn!")
 
         if column not in self.available_columns:
             raise ValueError("Column is filled!")
 
-        row = self.coins.filter(
-            column=column
-        ).annotate(
-            next_row=Cast(F('row') + 1, IntegerField())
-        ).aggregate(
-            col_next_row=Coalesce(Max('next_row'), Value(0))
-        ).get('col_next_row', 0)
+        row = (
+            self.coins.filter(column=column)
+            .annotate(next_row=Cast(F("row") + 1, IntegerField()))
+            .aggregate(col_next_row=Coalesce(Max("next_row"), Value(0)))
+            .get("col_next_row", 0)
+        )
 
         Coin.objects.create(game=self, player=user, column=column, row=row)
 
@@ -211,14 +234,20 @@ class Coin(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="coins")
     player = models.ForeignKey(User, on_delete=models.CASCADE)
     column = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(settings.CONNECT_FOUR_COLUMNS - 1)]
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(settings.CONNECT_FOUR_COLUMNS - 1),
+        ]
     )
     row = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(settings.CONNECT_FOUR_ROWS - 1)]
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(settings.CONNECT_FOUR_ROWS - 1),
+        ]
     )
     created_date = models.DateTimeField(auto_now_add=True)
 
-    unique_together = ['game', 'column', 'row']
+    unique_together = ["game", "column", "row"]
 
     def __str__(self):
         return f"{self.player} to ({self.row}, {self.column})"
