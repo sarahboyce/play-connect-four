@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -17,10 +17,6 @@ class GameListView(LoginRequiredMixin, generic.ListView):
         ).order_by('-status', '-created_date')
 
 
-class GameDetailView(LoginRequiredMixin, generic.DetailView):
-    model = Game
-
-
 class GameCreateView(LoginRequiredMixin, generic.CreateView):
     model = Game
     form_class = GameForm
@@ -31,7 +27,17 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):
         return kwargs
 
 
-class GameCoinRedirectView(LoginRequiredMixin, generic.RedirectView):
+class GamePlayerMixin(UserPassesTestMixin):
+    def test_func(self):
+        game = get_object_or_404(Game, pk=self.kwargs['pk'])
+        return self.request.user in (game.player_1, game.player_2)
+
+
+class GameDetailView(LoginRequiredMixin, GamePlayerMixin, generic.DetailView):
+    model = Game
+
+
+class GameCoinRedirectView(LoginRequiredMixin, GamePlayerMixin, generic.RedirectView):
 
     permanent = False
     pattern_name = 'game_detail'
@@ -43,7 +49,7 @@ class GameCoinRedirectView(LoginRequiredMixin, generic.RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
 
-class GameCheckRedirectView(LoginRequiredMixin, generic.View):
+class GameCheckRedirectView(LoginRequiredMixin, GamePlayerMixin, generic.View):
 
     def get(self, request, *args, **kwargs):
         game = get_object_or_404(Game, pk=kwargs['pk'])
