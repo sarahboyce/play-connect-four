@@ -10,7 +10,7 @@ DEBUG = env("DEBUG")
 
 SECRET_KEY = env("SECRET_KEY")
 
-ALLOWED_HOSTS = ["play-connect-4.herokuapp.com"]
+ALLOWED_HOSTS = ["play-connect-4.herokuapp.com", "127.0.0.1"]
 
 
 # Application definition
