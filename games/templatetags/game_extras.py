@@ -5,13 +5,18 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def game_list_title(context, game):
-    return mark_safe(game.html_list_title(user=context['request'].user))
+def game_opponent(context, game):
+    return game.opponent(user_id=context['request'].user.id)
+
+
+@register.simple_tag(takes_context=True)
+def game_coin(context, game):
+    return game.get_player_coin_class(user_id=context['request'].user.id)
 
 
 @register.simple_tag(takes_context=True)
 def game_badge(context, game):
-    return mark_safe(game.html_badge(user=context['request'].user))
+    return mark_safe(game.html_badge(user_id=context['request'].user.id))
 
 
 @register.simple_tag(takes_context=True)

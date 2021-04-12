@@ -1,0 +1,29 @@
+{% load static %}
+{% load game_extras %}
+{% for game in game_list %}
+<div class="col-md-4">
+    <a href="{{ game.get_absolute_url }}" class="card list-group-item-action mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3">
+                    <i class="fas fa-coins fa-2x circle-icon {% game_coin game %}"></i>
+                </div>
+                <div class="col-9">
+                    <h5 class="card-title">{% game_opponent game %}</h5>
+                    {% game_badge game %}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            Created: {{ game.created_date }}
+            {% if game.last_move %}<br>Last Move: {{ game.last_move.created_date }}{% endif %}
+        </div>
+    </a>
+</div>
+{% empty %}
+<div class="col-md-12 text-center">
+    <img width=400 src="{% static 'games/undraw_empty.svg' %}" alt="Empty image"/>
+    <p class="mt-2 text-info">No Connect 4 games - invite someone to play with you!</p>
+</div>
+
+{% endfor %}

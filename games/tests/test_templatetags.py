@@ -16,16 +16,27 @@ class GameExtrasTemplateTagTest(ViewTestCase):
         game = baker.make('games.Game', player_1=self.player_1, player_2=self.user)
         self.context = Context({'game': game, 'request': self.request})
 
-    def test_game_list_title(self):
+    def test_game_opponent(self):
         template_to_render = Template(
             '{% load game_extras %}'
-            '{% game_list_title game %}'
+            '{% game_opponent game %}'
         )
         rendered_template = template_to_render.render(self.context)
         # test that template tag loads correctly
         self.assertInHTML(
-            '<span class="text-danger"><i class="fas fa-coins"></i></span> '
-            'test.player1 challenges <span class="text-warning"><i class="fas fa-coins"></i></span> you',
+            'test.player1',
+            rendered_template,
+        )
+
+    def test_game_coin(self):
+        template_to_render = Template(
+            '{% load game_extras %}'
+            '{% game_coin game %}'
+        )
+        rendered_template = template_to_render.render(self.context)
+        # test that template tag loads correctly
+        self.assertInHTML(
+            'bg-warning',
             rendered_template,
         )
 
@@ -37,7 +48,7 @@ class GameExtrasTemplateTagTest(ViewTestCase):
         rendered_template = template_to_render.render(self.context)
         # test that template tag loads correctly
         self.assertInHTML(
-            '<span class="badge badge-primary"><i class="fas fa-play"></i> Continue</span>',
+            '<span class="badge badge-secondary"><i class="fas fa-spinner fa-pulse"></i> test.player1&#x27;s turn!</span>',
             rendered_template,
         )
 
@@ -75,6 +86,6 @@ class GameExtrasTemplateTagTest(ViewTestCase):
         rendered_template = template_to_render.render(self.context)
         # test that template tag loads correctly
         self.assertInHTML(
-            '<i class="fas fa-spinner fa-pulse"></i> test.player1s turn!',
+            "<i class='fas fa-spinner fa-pulse'></i> test.player1's turn!",
             rendered_template,
         )

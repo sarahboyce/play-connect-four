@@ -40,45 +40,53 @@ class Game(models.Model):
     def get_absolute_url(self):
         return reverse('game_detail', kwargs={'pk': self.pk})
 
-    def html_list_title(self, user):
-        is_player_1 = user == self.player_1
-        is_player_2 = user == self.player_2
-        player_1 = "You" if is_player_1 else self.player_1
-        player_2 = "you" if is_player_2 else self.player_2
+    def opponent(self, user_id):
+        return f"{self.player_2 if user_id == self.player_1_id else self.player_1}"
 
-        return format_html(
-            '<span class="text-danger"><i class="fas fa-coins"></i></span> {player_1} challenge{plural} '
-            '<span class="text-warning"><i class="fas fa-coins"></i></span> {player_2}',
-            player_1=player_1,
-            plural="" if is_player_1 else "s",
-            player_2=player_2,
-        )
+    def status_dict(self, user_id):
+        if self.winner and self.winner_id == user_id:
+            return {
+                'icon': 'trophy',
+                'inner_text': 'You won!',
+                'badge_class': 'success'
+            }
+        if self.winner:
+            return {
+                'icon': 'window-close',
+                'inner_text': 'You lost!',
+                'badge_class': 'secondary'
+            }
+        if self.status == Game.Status.DRAW:
+            return {
+                'icon': 'window-close',
+                'inner_text': 'You drew!',
+                'badge_class': 'secondary'
+            }
+        if self.is_users_turn(user_id):
+            return {
+                'icon': 'play',
+                'inner_text': 'Your turn!',
+                'badge_class': 'primary'
+            }
+        return {
+            'icon': 'spinner fa-pulse',
+            'inner_text': f"{self.opponent(user_id)}'s turn!",
+            'badge_class': 'secondary'
+        }
 
     def html_detail_title(self, user_id):
-        is_player_1 = user_id == self.player_1_id
-        if self.winner:
-            if self.winner_id == user_id:
-                return '<i class="fas fa-trophy"></i> You are the winner!'
-            return '<i class="fas fa-window-close"></i> You lost!'
-        if self.status == Game.Status.DRAW:
-            return '<i class="fas fa-window-close"></i> It was a draw!'
-        if self.is_users_turn(user_id):
-            return '<i class="fas fa-play"></i> Your turn!'
-        return f'<i class="fas fa-spinner fa-pulse"></i> ' \
-               f'{self.player_2 if is_player_1 else self.player_1}s turn!'
+        status_dict = self.status_dict(user_id)
+        return format_html(
+            '<i class="fas fa-{icon}"></i> {inner_text}',
+            icon=status_dict['icon'],
+            inner_text=status_dict['inner_text'],
+        )
 
-    def html_badge(self, user):
-        badge_class = 'primary' if self.is_pending else 'secondary'
-        icon = 'play'
-        inner_text = 'Continue'
-        if self.winner:
-            icon = 'trophy'
-            inner_text = f"{'You' if self.winner == user else self.winner} Won"
-        if self.status == Game.Status.DRAW:
-            icon = 'window-close'
-            inner_text = 'You Drew'
-        span = f'<span class="badge badge-{badge_class}"><i class="fas fa-{icon}"></i> '
-        return format_html(span + '{inner_text}</span>', inner_text=inner_text,)
+    def html_badge(self, user_id):
+        return format_html(
+            '<span class="badge badge-{badge_class}"><i class="fas fa-{icon}"></i> {inner_text}</span>',
+            **self.status_dict(user_id)
+        )
 
     @cached_property
     def available_columns(self):
