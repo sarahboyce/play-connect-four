@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 
 from .models import Game
+from .forms import GameForm
 
 
 class GameListView(LoginRequiredMixin, generic.ListView):
@@ -18,6 +19,16 @@ class GameListView(LoginRequiredMixin, generic.ListView):
 
 class GameDetailView(LoginRequiredMixin, generic.DetailView):
     model = Game
+
+
+class GameCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Game
+    form_class = GameForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 class GameCoinRedirectView(LoginRequiredMixin, generic.RedirectView):

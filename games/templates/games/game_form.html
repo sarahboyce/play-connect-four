@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block extraHead %}
+{{ form.media.css }}
+{% endblock %}
+
+
+{% block title %}Create Game{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Create Game</h5>
+                <form method="POST">
+                  {% csrf_token %}
+                  {{ form|crispy }}
+                  <button class="btn btn-primary" type="submit">Create Game</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extraJS %}
+    {{ form.media.js }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}

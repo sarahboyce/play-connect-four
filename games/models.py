@@ -21,10 +21,10 @@ class Game(models.Model):
         COMPLETE = "C", _("Complete")
 
     player_1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_1')
-    player_2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_2')
+    player_2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_2', verbose_name="Opponent")
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PLAYER_1)
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', blank=True, null=True)
-    created_date = models.DateTimeField(auto_created=True)
+    created_date = models.DateTimeField(auto_now_add=True)
 
     COLUMNS = [i for i in range(settings.CONNECT_FOUR_COLUMNS)]
     DIRECTIONS = [

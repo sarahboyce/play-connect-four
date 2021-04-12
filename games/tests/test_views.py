@@ -2,7 +2,7 @@ from django.test import TestCase, RequestFactory, override_settings
 from model_bakery import baker
 
 from games.models import Game, Coin
-from games.views import GameListView, GameCoinRedirectView, GameCheckRedirectView
+from games.views import GameListView, GameCoinRedirectView, GameCheckRedirectView, GameCreateView
 
 
 class ViewTestCase(TestCase):
@@ -54,6 +54,20 @@ class GameListViewTest(ViewTestCase):
         view.setup(self.request)
         qs = view.get_queryset()
         self.assertListEqual(list(qs.values_list('id', flat=True)), id_list)
+
+
+class GameCreateViewTest(ViewTestCase):
+    def test_get_form_kwargs(self):
+        request = self.factory.get('create/')
+        request.user = self.user
+        view = GameCreateView()
+        view.setup(request)
+        kwargs = view.get_form_kwargs()
+        self.assertEqual(
+            self.user,
+            kwargs.get("user"),
+            msg="user has been placed into the kwargs"
+        )
 
 
 @override_settings(CONNECT_FOUR_ROWS=6, CONNECT_FOUR_COLUMNS=7)
