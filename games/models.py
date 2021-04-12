@@ -114,6 +114,11 @@ class Game(models.Model):
             return "yellow"
         return "white"
 
+    def get_player_coin_class(self, user_id):
+        if self.get_player_colour(user_id) == "red":
+            return "text-light bg-danger"
+        return "bg-warning"
+
     @cached_property
     def current_player_colour(self):
         if self.status == Game.Status.PLAYER_1:

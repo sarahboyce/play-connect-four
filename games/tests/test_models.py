@@ -187,6 +187,10 @@ class GameTest(TestCase):
         self.assertEqual(self.game.get_player_colour(self.player_2.id), "yellow")
         self.assertEqual(self.game.get_player_colour(0), "white")
 
+    def test_get_player_coin_class(self):
+        self.assertEqual(self.game.get_player_coin_class(self.player_1.id), "text-light bg-danger")
+        self.assertEqual(self.game.get_player_coin_class(self.player_2.id), "bg-warning")
+
     def test_is_users_turn(self):
         self.assertTrue(
             self.game.is_users_turn(self.player_1.id),
