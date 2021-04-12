@@ -5,5 +5,5 @@
 </h1>
 
 <h4 align="center">
-    A django project to play [connect four](https://en.wikipedia.org/wiki/Connect_Four) against other users
+  A django project to play <a href="https://en.wikipedia.org/wiki/Connect_Four">connect four</a> against other users
 </h4>
