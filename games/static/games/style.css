@@ -47,13 +47,17 @@ tbody {
     top: 50%;
     transform: translateY(-50%);
   }
+  .col {
+    padding-left: 5px!important;
+    padding-right: 5px!important;
+  }
 }
 
-@media screen and (max-width: 20em) {
+@media screen and (max-width: 22em) {
   /* For small mobile phones: */
   .circle {
-    width: 2.5em;
-    height: 2.5em;
+    width: 2.4em;
+    height: 2.4;
     box-sizing: border-box;
     display: inline-block;
     position: relative;
@@ -62,11 +66,15 @@ tbody {
     content: '';
     width: 2em;
     height: 2em;
-    left: 0.25em;
+    left: 0.2em;
     border-radius: 100%;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+  }
+  .col {
+    padding-left: 5px!important;
+    padding-right: 5px!important;
   }
 }
 
