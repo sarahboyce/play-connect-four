@@ -2,7 +2,7 @@ import os
 
 import environ
 
-env = environ.Env(DEBUG=(bool, False))
+env = environ.Env(DEBUG=(bool, False), PRODUCTION=(bool, True))
 environ.Env.read_env()
 
 
@@ -158,3 +158,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Local settings
 CONNECT_FOUR_ROWS = 6
 CONNECT_FOUR_COLUMNS = 7
+
+PRODUCTION = env("PRODUCTION")
+
+if not PRODUCTION:
+    # remove whitenoise from middleware for local development
+    MIDDLEWARE = [
+        "django.middleware.security.SecurityMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.common.CommonMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    ]
