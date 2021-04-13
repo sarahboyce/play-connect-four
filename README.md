@@ -1,12 +1,16 @@
+<h3 align="center">
+  A django project to play <a href="https://en.wikipedia.org/wiki/Connect_Four">connect four</a> against other users
+</h3>
+<h4 align="center">
+  Demo: https://play-connect-4.herokuapp.com/
+</h4>
+
+
 <h1 align="center">
   <br>
   <img src="docs/readme_images/connect4demo.gif" alt="Connect4 demo" width="750">
   <br>
 </h1>
-
-<h4 align="center">
-  A django project to play <a href="https://en.wikipedia.org/wiki/Connect_Four">connect four</a> against other users
-</h4>
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
